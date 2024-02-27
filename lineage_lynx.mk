@@ -13,6 +13,9 @@ $(call inherit-product, device/google/lynx/aosp_lynx.mk)
 $(call inherit-product, device/google/gs201/lineage_common.mk)
 $(call inherit-product, device/google/lynx/device-lineage.mk)
 
+#Gapps
+include vendor/gapps/arm64/arm64-vendor.mk
+
 # Device identifier. This must come after all inclusions
 PRODUCT_BRAND := google
 PRODUCT_MODEL := Pixel 7a

@@ -38,6 +38,8 @@ BOARD_BOOTCONFIG += androidboot.load_modules_parallel=true
 BOARD_KERNEL_CMDLINE += fips140.load_sequential=1
 BOARD_KERNEL_CMDLINE += exynos_drm.load_sequential=1
 
+TARGET_SYSTEM_PROP += device/google/lynx/system.prop
+
 include device/google/gs201/BoardConfig-common.mk
 -include vendor/google_devices/gs201/prebuilts/BoardConfigVendor.mk
 include device/google/gs-common/check_current_prebuilt/check_current_prebuilt.mk

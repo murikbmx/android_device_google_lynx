@@ -1,44 +1,35 @@
 #
-# Copyright (C) 2021 The Android Open-Source Project
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#      http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
+# SPDX-FileCopyrightText: 2021 The Android Open-Source Project
+# SPDX-FileCopyrightText: The LineageOS Project
+# SPDX-FileCopyrightText: The Calyx Institute
+# SPDX-License-Identifier: Apache-2.0
 #
 
-TARGET_BOARD_INFO_FILE := device/google/lynx/board-info.txt
-TARGET_BOOTLOADER_BOARD_NAME := lynx
+TARGET_BOARD_INFO_FILE := $(DEVICE_PATH)/board-info.txt
+TARGET_BOOTLOADER_BOARD_NAME := $(DEVICE_CODENAME)
+TARGET_SCREEN_DENSITY := 420
 
-ifdef PHONE_CAR_BOARD_PRODUCT
-        include vendor/auto/embedded/products/$(PHONE_CAR_BOARD_PRODUCT)/BoardConfig.mk
-else
-        TARGET_SCREEN_DENSITY := 420
-endif
+# Security - must be defined before including BoardConfig-common.mk
+BOOT_SECURITY_PATCH := 2025-11-05
+VENDOR_SECURITY_PATCH := $(BOOT_SECURITY_PATCH)
 
-BOARD_USES_GENERIC_AUDIO := true
-USES_DEVICE_GOOGLE_LYNX := true
-$(call soong_config_set_bool,prebuilts_wlan,USES_DEVICE_GOOGLE_LYNX,$(USES_DEVICE_GOOGLE_LYNX))
+include device/google/gs201/BoardConfig-common.mk
 
-# Enable load module in parallel
+# Kernel modules
 BOARD_BOOTCONFIG += androidboot.load_modules_parallel=true
 
-# The modules which need to be loaded in sequential
 BOARD_KERNEL_CMDLINE += fips140.load_sequential=1
 BOARD_KERNEL_CMDLINE += exynos_drm.load_sequential=1
 
-include device/google/gs201/BoardConfig-common.mk
-include device/google/gs-common/check_current_prebuilt/check_current_prebuilt.mk
+BOARD_VENDOR_KERNEL_RAMDISK_KERNEL_MODULES_BLOCKLIST_FILE := $(DEVICE_PATH)/recovery/modules.blocklist.vendor_kernel_boot
+BOARD_VENDOR_KERNEL_RAMDISK_KERNEL_MODULES_LOAD_RAW := $(strip $(shell cat $(DEVICE_PATH)/recovery/modules.load.vendor_kernel_boot))
+BOARD_VENDOR_KERNEL_RAMDISK_KERNEL_MODULES_LOAD += $(BOARD_VENDOR_KERNEL_RAMDISK_KERNEL_MODULES_LOAD_RAW)
+BOARD_VENDOR_KERNEL_RAMDISK_KERNEL_MODULES += $(addprefix $(KERNEL_MODULE_DIR)/, $(notdir $(BOARD_VENDOR_KERNEL_RAMDISK_KERNEL_MODULES_LOAD_RAW)))
+
+# SEPolicy
 include device/google/lynx/sepolicy/lynx-sepolicy.mk
+
+# WiFi
 include device/google/gs201/wifi/qcom/BoardConfig-wifi.mk
 
-DEVICE_PATH := device/google/lynx
-VENDOR_PATH := vendor/google/lynx
-include $(DEVICE_PATH)/$(TARGET_BOOTLOADER_BOARD_NAME)/BoardConfigLineage.mk
+include $(VENDOR_PATH)/BoardConfigVendor.mk

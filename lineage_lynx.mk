@@ -28,3 +28,9 @@ PRODUCT_BUILD_PROP_OVERRIDES += \
     DeviceProduct=$(DEVICE_CODENAME)
 
 $(call inherit-product, $(VENDOR_PATH)/$(DEVICE_CODENAME)-vendor.mk)
+
+# Conditionally inherit GMS makefiles
+ifneq ("$(wildcard vendor/gapps/arm64/arm64-vendor.mk)", "")
+$(call inherit-product, vendor/gapps/arm64/arm64-vendor.mk)
+endif
+PRODUCT_ENFORCE_ARTIFACT_PATH_REQUIREMENTS := false
